@@ -1,0 +1,76 @@
+<div class="flex-center flex-column">
+    <img style="margin-top: 40px;"
+        src="https://www.triumphgroup.com/wp-content/uploads/2017/10/Triumph-Group_TEST-1.png">
+    <h3>Report Generator</h3>
+</div>
+
+<div class="wrapper flex-center flex-column">
+
+    <div class="inputs">
+        <mat-form-field appearance="outline">
+            <mat-label>Identifier</mat-label>
+            <input [(ngModel)]="vin" matInput placeholder="Placeholder">
+            <button mat-icon-button matSuffix (click)="advancedSettings = !advancedSettings">
+                <mat-icon matSuffix>{{advancedSettings ? 'expand_less' : 'expand_more'}}</mat-icon>
+            </button>
+            <mat-hint *ngIf="advancedSettings">Advanced Report</mat-hint>
+        </mat-form-field>
+        <!-- <mat-checkbox [(ngModel)]="advancedSettings">Advanced</mat-checkbox> -->
+
+        <ng-container *ngIf="advancedSettings === true">
+            <mat-form-field appearance="outline">
+                <mat-label>Date range</mat-label>
+                <mat-date-range-input [rangePicker]="picker">
+                    <input matStartDate placeholder="Start date" (dateChange)="startDate = $event">
+                    <input matEndDate placeholder="End date" (dateChange)="endDate = $event">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+        </ng-container>
+    </div>
+
+    <div class="buttons">
+        <button mat-raised-button color="primary" (click)="generateReport()">
+            Generate Report
+            <mat-icon>history_edu</mat-icon>
+        </button>
+        <ng-container *ngIf="reportResults">
+            <button mat-raised-button color="primary" (click)="downloadReport()">
+                Download Report
+                <mat-icon>get_app</mat-icon>
+            </button>
+            <button mat-raised-button color="primary" printSectionId="print-section" [useExistingCss]="true" ngxPrint>
+                Print Report
+                <mat-icon>print</mat-icon>
+            </button>
+        </ng-container>
+    </div>
+
+    <div *ngIf="reportResults" class="report-table">
+        <app-report [reportResults]="reportResults" [vin]="vin"></app-report>
+    </div>
+
+    <div class="reports">
+        <mat-list>
+            <div mat-subheader>Reports</div>
+            <mat-list-item *ngFor="let file of files">
+                <mat-icon mat-list-icon>history_edu</mat-icon>
+                <div mat-line>{{file.name}}</div>
+                <div mat-line> {{file.created}} </div>
+                <button mat-icon-button (click)="downloadReport(file.name)">
+                    <mat-icon>get_app</mat-icon>
+                </button>
+            </mat-list-item>
+            <!-- <mat-divider></mat-divider> -->
+        </mat-list>
+    </div>
+</div>
+
+<button class="top-right" mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>account_circle</mat-icon>
+</button>
+<mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="logout()">Logout <mat-icon>exit_to_app</mat-icon></button>
+</mat-menu>
