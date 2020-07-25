@@ -12,7 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
-import { MainComponent } from './main/main.component';
+import { MainComponent, BottomSheetOverviewExampleSheetComponent } from './main/main.component';
 import { ReportComponent } from './report/report.component';
 
 @NgModule({
@@ -20,7 +20,8 @@ import { ReportComponent } from './report/report.component';
     AppComponent,
     LoginComponent,
     MainComponent,
-    ReportComponent
+    ReportComponent,
+    BottomSheetOverviewExampleSheetComponent
   ],
   imports: [
     BrowserModule,
@@ -34,6 +35,7 @@ import { ReportComponent } from './report/report.component';
     NgxPrintModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [BottomSheetOverviewExampleSheetComponent]
 })
 export class AppModule { }

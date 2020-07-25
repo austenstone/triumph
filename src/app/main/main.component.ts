@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { DevicewiseApiService } from 'devicewise-angular';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { StagingFile } from 'devicewise-angular/lib/models/dwresponse';
-import { SnackbarService } from "../snackbar.service";
+import { SnackbarService } from '../snackbar.service';
 import { finalize, map, tap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { forkJoin, Observable } from 'rxjs';
+import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 
 @Component({
   selector: 'app-main',
@@ -19,17 +20,19 @@ export class MainComponent implements OnInit {
   vin: string;
   startDate: MatDatepickerInputEvent<Date>;
   endDate: MatDatepickerInputEvent<Date>;
-  advancedSettings: boolean = false;
+  advancedSettings = false;
   reportResults: any[];
   config = {
-    Start: "0",
-    Stop: "0"
-  }
+    Start: '0',
+    Stop: '0'
+  };
+  maxRows = 50;
 
   constructor(
     private dwApi: DevicewiseApiService,
     private snackBarService: SnackbarService,
-    private router: Router
+    private router: Router,
+    private bottomSheet: MatBottomSheet
   ) { }
 
   ngOnInit(): void {
@@ -41,7 +44,7 @@ export class MainComponent implements OnInit {
           return file;
         })
         .sort((a, b) => b.created - a.created)
-        .splice(0, 10)
+        .splice(0, 10);
     });
   }
 
@@ -55,7 +58,7 @@ export class MainComponent implements OnInit {
       this.snackBarService.openFailure('Missing identifier input');
     }
     let query = `SELECT * FROM MID0061 WHERE VIN=${this.vin}`;
-    let triggerInputVariables: any = {
+    const triggerInputVariables: any = {
       VIN: this.vin
     };
     let fileName;
@@ -64,14 +67,13 @@ export class MainComponent implements OnInit {
         this.config = {
           Start: this.startDate.value.getTime().toString(),
           Stop: this.endDate.value.getTime().toString()
-        }
+        };
         triggerInputVariables.Start = this.startDate.value.getTime().toString();
         triggerInputVariables.Stop = this.startDate.value.getTime().toString();
         const fromTime = this.formatDate(this.startDate.value);
         const toTime = this.formatDate(this.endDate.value);
         query += ` AND DATETIME BETWEEN "${fromTime}" AND "${toTime}"`;
       }
-      let name = `report_${triggerInputVariables.Start}-${triggerInputVariables.Stop}.csv`;
     } else {
       fileName = `report_${this.vin}.csv`;
     }
@@ -99,13 +101,12 @@ export class MainComponent implements OnInit {
         });
         this.snackBarService.openSuccess('Report Generated');
 
-        console.log(sqlResult);
-        this.reportResults = sqlResult.params.results;
+        this.reportResults = sqlResult.params.results.slice(0, this.maxRows);
       })
     );
   }
 
-  logout() {
+  logout(): void {
     this.dwApi.logout().pipe(
       finalize(() => this.router.navigate(['/login']))
     ).subscribe();
@@ -113,7 +114,7 @@ export class MainComponent implements OnInit {
 
   downloadReport(name?: string): void {
     if (!this.config?.Start || !this.config?.Stop) {
-      this.snackBarService.open('Date range is missing.')
+      this.snackBarService.open('Date range is missing.');
       return;
     }
     this.snackBarService.open('Downloading Report 📄');
@@ -140,39 +141,51 @@ export class MainComponent implements OnInit {
     }
   }
 
-  _printHtml(content: string) {
-    const iframe = document.createElement("iframe");
-    iframe.onload = function () {
+  _printHtml(content: string): void {
+    const iframe = document.createElement('iframe');
+    iframe.onload = function() {
       const frame = this as HTMLIFrameElement;
       const contentWindow = frame.contentWindow;
       iframe.contentWindow.document.write(content);
-      contentWindow.onbeforeunload = function () {
-        document.body.removeChild(frame)
+      contentWindow.onbeforeunload = () => {
+        document.body.removeChild(frame);
       };
-      contentWindow.onafterprint = function () {
-        document.body.removeChild(frame)
+      contentWindow.onafterprint = () => {
+        document.body.removeChild(frame);
       };
       contentWindow.focus(); // Required for IE
       contentWindow.print();
     };
-    iframe.style.position = "fixed";
-    iframe.style.right = "0";
-    iframe.style.bottom = "0";
-    iframe.style.width = "0";
-    iframe.style.height = "0";
-    iframe.style.border = "0";
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
     document.body.appendChild(iframe);
   }
 
 
   formatDate(date: Date): string {
-    return date.getFullYear() + "-" +
-      String(date.getMonth() + 1).padStart(2, "0") + "-" +
-      String(date.getDate()).padStart(2, "0") +
-      " " +
-      String(date.getHours()).padStart(2, "0") + ":" +
-      String(date.getMinutes()).padStart(2, "0") + ":" +
-      String(date.getSeconds()).padStart(2, "0") + "." +
-      String(date.getMilliseconds()).padStart(3, "0")
+    return date.getFullYear() + '-' +
+      String(date.getMonth() + 1).padStart(2, '0') + '-' +
+      String(date.getDate()).padStart(2, '0') +
+      ' ' +
+      String(date.getHours()).padStart(2, '0') + ':' +
+      String(date.getMinutes()).padStart(2, '0') + ':' +
+      String(date.getSeconds()).padStart(2, '0') + '.' +
+      String(date.getMilliseconds()).padStart(3, '0');
   }
+
+  openBottomSheet(): void {
+    this.bottomSheet.open(BottomSheetOverviewExampleSheetComponent, {data: { this: this }});
+  }
+}
+
+@Component({
+  selector: 'app-bottom-sheet-overview-example-sheet',
+  templateUrl: 'bottom-sheet-overview-example-sheet.html',
+})
+export class BottomSheetOverviewExampleSheetComponent {
+  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: any) {}
 }

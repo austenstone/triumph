@@ -29,8 +29,9 @@ export interface ReportData {
 })
 export class ReportComponent implements OnInit, OnChanges {
   displayedColumns: string[] = [
-    'Status', 'TorqueStatus', 'Torque', 'PVTStatus',
-    'PVT', 'DateTime', 'TID'
+    'TID', 'Status', 'TorqueStatus', 'Torque',
+    'AngleStatus', 'Angle', 'PVTStatus', 'PVT',
+    'DateTime'
   ];
   dataSource: MatTableDataSource<ReportData>;
 
@@ -38,6 +39,7 @@ export class ReportComponent implements OnInit, OnChanges {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @Input() reportResults: any[];
   @Input() vin: string;
+  @Input() maxRows: number;
 
   constructor() {
     // Create 100 users
@@ -47,16 +49,17 @@ export class ReportComponent implements OnInit, OnChanges {
     this.dataSource = new MatTableDataSource();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     this.dataSource.data = this.reportResults;
+    console.log('maxRows', this.maxRows);
   }
 
-  applyFilter(event: Event) {
+  applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
 

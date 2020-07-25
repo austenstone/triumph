@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SnackbarService } from '../snackbar.service';
 import { StorageService } from '../storage.service';
+import { environment } from 'src/environments/environment';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -15,8 +17,9 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup = new FormGroup({
     username: new FormControl('admin'),
     password: new FormControl('admin'),
-    nodeAddress: new FormControl('http://localhost:8081'),
+    nodeAddress: new FormControl(environment.endpoint),
   });
+  loggingIn = false;
 
   constructor(
     private dwAuth: DevicewiseAuthService,
@@ -32,11 +35,14 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  onLogin() {
+  onLogin(): void {
+    this.loggingIn = true;
     const username = this.loginForm.get('username').value;
     const password = this.loginForm.get('password').value;
     const nodeAddress = this.loginForm.get('nodeAddress').value;
-    this.dwAuth.login(nodeAddress, username, password).subscribe({
+    this.dwAuth.login(nodeAddress, username, password).pipe(
+      finalize(() => this.loggingIn = false)
+    ).subscribe({
       next: (loginResult) => {
         if (loginResult.success) {
           this.storageService.storeLastUsedNode({ dwNodeAddr: nodeAddress });
@@ -45,7 +51,7 @@ export class LoginComponent implements OnInit {
         }
       },
       error: (message) => {
-        this.snackBarService.openFailure(message)
+        this.snackBarService.openFailure(message);
       }
     });
   }

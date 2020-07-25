@@ -18,6 +18,9 @@
             <mat-icon matSuffix>desktop_windows</mat-icon>
             <mat-hint>deviceWISE Node Address</mat-hint>
         </mat-form-field>
-        <button mat-raised-button color="primary" type="submit">Login</button>
+        <button mat-raised-button color="primary" type="submit">
+          Login
+          <mat-progress-bar *ngIf="loggingIn" mode="indeterminate"></mat-progress-bar>
+        </button>
     </form>
 </div>
