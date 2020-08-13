@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, Input, OnChanges } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
+import { OpStatusPipe } from './op-status.pipe';
 
 export interface ReportData {
   Status: string;
@@ -42,10 +43,6 @@ export class ReportComponent implements OnInit, OnChanges {
   @Input() maxRows: number;
 
   constructor() {
-    // Create 100 users
-    // const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
-
-    // Assign the data to the data source for the table to render
     this.dataSource = new MatTableDataSource();
   }
 

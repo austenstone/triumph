@@ -14,6 +14,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { MainComponent, BottomSheetOverviewExampleSheetComponent } from './main/main.component';
 import { ReportComponent } from './report/report.component';
+import { OpStatusPipe } from './report/op-status.pipe';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { ReportComponent } from './report/report.component';
     LoginComponent,
     MainComponent,
     ReportComponent,
-    BottomSheetOverviewExampleSheetComponent
+    BottomSheetOverviewExampleSheetComponent,
+    OpStatusPipe
   ],
   imports: [
     BrowserModule,

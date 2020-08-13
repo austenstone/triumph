@@ -56,8 +56,9 @@ export class MainComponent implements OnInit {
   _generateReport(): Observable<any> {
     if (!this.vin) {
       this.snackBarService.openFailure('Missing identifier input');
+      this.vin = '';
     }
-    let query = `SELECT * FROM MID0061 WHERE VIN=${this.vin}`;
+    let query = `SELECT * FROM MID0061 WHERE VIN='${this.vin}'`;
     const triggerInputVariables: any = {
       VIN: this.vin
     };

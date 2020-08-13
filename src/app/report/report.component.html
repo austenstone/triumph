@@ -20,7 +20,7 @@
 
         <ng-container matColumnDef="TorqueStatus">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Torque Status </th>
-            <td mat-cell *matCellDef="let row"> {{row.TorqueStatus}} </td>
+            <td mat-cell *matCellDef="let row"> {{row.TorqueStatus | opStatus}} </td>
         </ng-container>
 
         <ng-container matColumnDef="Torque">
