@@ -54,11 +54,13 @@ export class MainComponent implements OnInit {
   }
 
   _generateReport(): Observable<any> {
-    if (!this.vin) {
+    let query;
+    if (this.vin) {
+      query = `SELECT * FROM MID0061 WHERE VIN='${this.vin}'`;
+    } else {
       this.snackBarService.openFailure('Missing identifier input');
-      this.vin = '';
+      query = `SELECT * FROM MID0061`;
     }
-    let query = `SELECT * FROM MID0061 WHERE VIN='${this.vin}'`;
     const triggerInputVariables: any = {
       VIN: this.vin
     };
@@ -73,7 +75,11 @@ export class MainComponent implements OnInit {
         triggerInputVariables.Stop = this.startDate.value.getTime().toString();
         const fromTime = this.formatDate(this.startDate.value);
         const toTime = this.formatDate(this.endDate.value);
-        query += ` AND DATETIME BETWEEN "${fromTime}" AND "${toTime}"`;
+        if (this.vin) {
+          query += ` AND DATETIME BETWEEN "${fromTime}" AND "${toTime}"`;
+        } else {
+          query += ` WHERE DATETIME BETWEEN "${fromTime}" AND "${toTime}"`;
+        }
       }
     } else {
       fileName = `report_${this.vin}.csv`;

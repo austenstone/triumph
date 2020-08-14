@@ -15,7 +15,7 @@
 
         <ng-container matColumnDef="Status">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Over All Status </th>
-            <td mat-cell *matCellDef="let row"> {{row.Status}} </td>
+            <td mat-cell *matCellDef="let row"> {{row.Status | opStatus2}} </td>
         </ng-container>
 
         <ng-container matColumnDef="TorqueStatus">
@@ -30,7 +30,7 @@
 
         <ng-container matColumnDef="AngleStatus">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Angle Status </th>
-            <td mat-cell *matCellDef="let row"> {{row.AngleStatus}} </td>
+            <td mat-cell *matCellDef="let row"> {{row.AngleStatus | opStatus}} </td>
         </ng-container>
 
         <ng-container matColumnDef="Angle">

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, Input, OnChanges } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import { OpStatusPipe } from './op-status.pipe';
+import { OpStatusPipe, OpStatusPipe2 } from './op-status.pipe';
 
 export interface ReportData {
   Status: string;
